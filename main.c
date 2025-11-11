@@ -1,6 +1,5 @@
 /*
- * link do wokwi: https://wokwi.com/projects/447280997012932609
- * Global Solution 2 - Monitor de Redes Wi-Fi Seguras (ESP-IDF Nativo, deve ser executado no wokwi)
+ * Global Solution 2 - Monitor de Redes Wi-Fi Seguras (ESP-IDF Nativo)
  * Aluno: VINICIUS RODRIGUES
  * RM: 89192
  * * Este código usa o framework ESP-IDF nativo (app_main) e
@@ -38,17 +37,16 @@
 #define WIFI_SSID      "Wokwi-GUEST"
 #define WIFI_PASSWORD  ""
 
-// --- Lista Segura de Redes (Requisito do PDF) ---
+// --- Lista Segura de Redes ---
 /*
  * !!! IMPORTANTE PARA O TESTE NO WOKWI !!!
  * O Wokwi sempre se conecta à rede "Wokwi-GUEST".
  *
- * Cenário 1: TESTE SEGURO (Como está agora)
- * Deixe "Wokwi-GUEST" na lista. O log mostrará "[VALIDADOR] Rede Segura".
+ * Cenário 1: TESTE SEGURO
+ * Deixe "Wokwi-GUEST" na lista..
  *
- * Cenário 2: TESTE DE ALERTA (Inseguro)
- * Comente ou remova a linha "Wokwi-GUEST" da lista.
- * O log mostrará "[ALERTA] REDE INSEGURA DETECTADA: Wokwi-GUEST".
+ * Cenário 2: TESTE DE ALERTA (NÃO PERMITIDA / Inseguro)
+  remova a linha "Wokwi-GUEST" da lista.
  */
 const char* LISTA_SEGURA[5] = {
     "Wokwi-GUEST",        // <- Rede simulada do Wokwi
@@ -201,21 +199,21 @@ void task_validador(void *pvParameters) {
                 xSemaphoreGive(semaforo_lista_segura); // Devolve o Semáforo
             
             } else {
-                printf("{%s} [VALIDADOR] ERRO: Nao conseguiu pegar o semaforo!\n", NOME_ALUNO);
+                printf("{%s} ERRO: Nao conseguiu pegar o semaforo!\n", NOME_ALUNO);
             }
 
             // Atualiza o status global para a task_alerta
             if (encontrado) {
                 g_status_rede = 0; // OK
-                printf("{%s} [VALIDADOR] Rede Segura: %s\n", NOME_ALUNO, ssid_recebido);
+                printf("{%s} Rede Segura: %s\n", NOME_ALUNO, ssid_recebido);
             } else {
                 g_status_rede = 1; // ALERTA
-                printf("{%s} [ALERTA] REDE INSEGURA DETECTADA: %s\n", NOME_ALUNO, ssid_recebido);
+                printf("{%s} REDE NÃO PERMITIDA/INSEGURA: %s\n", NOME_ALUNO, ssid_recebido);
             }
 
         } else {
             // Fila deu timeout (Scanner deve ter travado)
-            printf("{%s} [VALIDADOR] FALHA: Scanner nao envia dados ha %ds!\n", NOME_ALUNO, TIMEOUT_FILA_MS / 1000);
+            printf("{%s} FALHA: Scanner nao envia dados ha %ds!\n", NOME_ALUNO, TIMEOUT_FILA_MS / 1000);
             g_status_rede = 2; // FALHA
         }
 
